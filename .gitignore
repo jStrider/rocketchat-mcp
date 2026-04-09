@@ -1,0 +1,6 @@
+dist/
+coverage.out
+rocketchat-mcp
+*.test
+*.out
+.env

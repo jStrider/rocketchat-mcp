@@ -1,0 +1,19 @@
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - errorlint
+    - govet
+    - gosimple
+    - staticcheck
+    - unused
+    - ineffassign
+    - gofumpt
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+  errorlint:
+    errorf: true
+    asserts: true
+    comparison: true
