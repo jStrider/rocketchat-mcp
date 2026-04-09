@@ -11,6 +11,7 @@ func RegisterAll(srv *server.MCPServer, client *rocketchat.Client, _ *config.Con
 	registerChannelTools(srv, client)
 	registerMessageTools(srv, client)
 	registerUserTools(srv, client)
+	registerDMTools(srv, client)
 	registerThreadTools(srv, client)
 	registerManagementTools(srv, client)
 }

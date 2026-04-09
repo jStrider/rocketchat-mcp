@@ -85,6 +85,49 @@ func (c *Client) SendDM(ctx context.Context, username, text string) (*Message, e
 	return &resp.Message, nil
 }
 
+// DMRoom represents a direct message room from im.list.
+type DMRoom struct {
+	ID        string      `json:"_id"`
+	Usernames []string    `json:"usernames"`
+	LastMessage *Message  `json:"lastMessage,omitempty"`
+	UpdatedAt string      `json:"_updatedAt"`
+}
+
+// DMListResponse wraps the im.list API response.
+type DMListResponse struct {
+	IMs []DMRoom `json:"ims"`
+	Pagination
+}
+
+// ListDMs returns the authenticated user's direct message conversations.
+func (c *Client) ListDMs(ctx context.Context, opts ListOptions) (*DMListResponse, error) {
+	params := pagingParams(opts, 50)
+	raw, err := c.get(ctx, "/im.list", params)
+	if err != nil {
+		return nil, fmt.Errorf("list DMs: %w", err)
+	}
+	var resp DMListResponse
+	if err := json.Unmarshal(raw, &resp); err != nil {
+		return nil, fmt.Errorf("parse DM list response: %w", err)
+	}
+	return &resp, nil
+}
+
+// GetDMHistory returns message history from a DM room by room ID.
+func (c *Client) GetDMHistory(ctx context.Context, roomID string, opts ListOptions) (*MessageListResponse, error) {
+	params := pagingParams(opts, 50)
+	params.Set("roomId", roomID)
+	raw, err := c.get(ctx, "/im.history", params)
+	if err != nil {
+		return nil, fmt.Errorf("get DM history for %q: %w", roomID, err)
+	}
+	var resp MessageListResponse
+	if err := json.Unmarshal(raw, &resp); err != nil {
+		return nil, fmt.Errorf("parse DM history response: %w", err)
+	}
+	return &resp, nil
+}
+
 // GetThreadMessages returns messages from a thread.
 func (c *Client) GetThreadMessages(ctx context.Context, threadID string, opts ListOptions) (*MessageListResponse, error) {
 	params := pagingParams(opts, 50)
